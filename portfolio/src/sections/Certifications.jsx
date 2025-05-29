@@ -6,20 +6,22 @@ const certifications = [
     title: "Full Stack Web Development",
     issuer: "Grras Solutions Pvt. Ltd.",
     date: "June 2023",
-    certificateUrl: "https://coursera.org/certificate/fullstackwebdev",
+    certificateUrl:
+      "https://drive.google.com/file/d/1WaEVuaJmIKqbOoXwFTTKQ9Mn9XozFtSP/view?usp=sharing",
   },
   {
     title: "Front-End Web Development",
     issuer: "Remark Skill",
     date: "Jan 2022",
     certificateUrl:
-      "https://university.mongodb.com/certificates/mongodb-developers",
+      "https://drive.google.com/file/d/1lNoqEA53no2h8fPFqQ14WzYEvg07q-WL/view?usp=sharing",
   },
   {
     title: "Full Stack Web Development",
     issuer: "Internshala",
     date: "Feb 2022",
-    certificateUrl: "https://udemy.com/certificate/react-complete-guide",
+    certificateUrl:
+      "https://drive.google.com/file/d/1caZWNDvc9FUCCuv_WUZ0J7Onqssb32bc/view?usp=sharing",
   },
   // Add more certifications as needed
 ];
