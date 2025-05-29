@@ -28,14 +28,12 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Trigger native HTML5 validation UI:
     if (!e.target.checkValidity()) {
       setSubmitStatus("error");
       setErrorMsg("Please fill the form correctly.");
       return;
     }
 
-    // Additional React-side checks (if needed)
     if (!formData.name || !formData.email || !formData.message) {
       setSubmitStatus("error");
       setErrorMsg("Please fill all fields.");
@@ -47,7 +45,7 @@ const Contact = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/contact",
+        "https://my-portfolio-z5sh.onrender.com/api/contact",
         formData
       );
 
