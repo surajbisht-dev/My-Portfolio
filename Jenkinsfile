@@ -2,13 +2,14 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_BACKEND = "surajbishtdev/portfolio-backend"
-        IMAGE_FRONTEND = "surajbishtdev/portfolio-frontend"
+        DOCKERHUB_USER = "surajbishtdev"
+        IMAGE_BACKEND = "${DOCKERHUB_USER}/portfolio-backend"
+        IMAGE_FRONTEND = "${DOCKERHUB_USER}/portfolio-frontend"
     }
 
     stages {
 
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
                 echo "📦 Checking out source code..."
                 git branch: 'main', url: 'https://github.com/surajbisht-dev/My-Portfolio.git'
@@ -19,7 +20,7 @@ pipeline {
             steps {
                 echo "⚙️ Building backend Docker image..."
                 dir('backend') {
-                    sh 'docker build -t surajbishtdev/portfolio-backend:latest .'
+                    sh 'docker build -t ${IMAGE_BACKEND}:latest .'
                 }
             }
         }
@@ -28,8 +29,26 @@ pipeline {
             steps {
                 echo "🎨 Building frontend Docker image..."
                 dir('portfolio') {
-                    sh 'docker build -t surajbishtdev/portfolio-frontend:latest .'
+                    sh 'docker build -t ${IMAGE_FRONTEND}:latest .'
                 }
+            }
+        }
+
+        stage('Trivy Security Scan - Backend') {
+            steps {
+                echo "🧪 Scanning backend image for vulnerabilities..."
+                sh '''
+                    trivy image --exit-code 1 --severity HIGH,CRITICAL ${IMAGE_BACKEND}:latest || true
+                '''
+            }
+        }
+
+        stage('Trivy Security Scan - Frontend') {
+            steps {
+                echo "🧪 Scanning frontend image for vulnerabilities..."
+                sh '''
+                    trivy image --exit-code 1 --severity HIGH,CRITICAL ${IMAGE_FRONTEND}:latest || true
+                '''
             }
         }
 
@@ -39,8 +58,8 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push surajbishtdev/portfolio-backend:latest
-                        docker push surajbishtdev/portfolio-frontend:latest
+                        docker push ${IMAGE_BACKEND}:latest
+                        docker push ${IMAGE_FRONTEND}:latest
                     '''
                 }
             }
