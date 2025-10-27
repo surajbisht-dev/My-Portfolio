@@ -1,43 +1,53 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'node' 
+    }
+
+    environment {
+        SONARQUBE = 'SonarQubeServer' // Name you used in Jenkins Sonar config
+    }
+
     stages {
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/surajbisht-dev/My-Portfolio.git'
             }
         }
 
-        stage('Build Backend') {
+        stage('Install Dependencies') {
             steps {
-                sh 'docker build -t myportfolio-backend ./backend'
+                dir('portfolio') {
+                    sh 'npm install'
+                }
+                dir('backend') {
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('Code Quality Scan') {
+            steps {
+                withSonarQubeEnv('SonarQubeServer') {
+                    sh 'sonar-scanner'
+                }
             }
         }
 
         stage('Build Frontend') {
             steps {
-                sh 'docker build -t myportfolio-frontend ./portfolio'
-            }
-        }
-
-        stage('Security Scan') {
-            steps {
-                sh 'trivy image myportfolio-backend || true'
-                sh 'trivy image myportfolio-frontend || true'
-            }
-        }
-
-        stage('Code Quality Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh 'sonar-scanner -Dsonar.projectKey=My-Portfolio -Dsonar.sources=.'
+                dir('portfolio') {
+                    sh 'npm run build'
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Docker Build') {
             steps {
-                sh 'docker-compose up -d'
+                script {
+                    sh 'docker build -t myportfolio-app .'
+                }
             }
         }
     }
